@@ -65,11 +65,20 @@ define(function (require, exports, moudle) {
         if (this.div_id == undefined) {
             this.div_id = this.uuid();
         }
+        var spans="<span class='left_top' style='display: block;position: absolute;top:-1px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='top_mid' style='display: block;position: absolute;top:-1px;left:"+((divWith-4)/2)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='right_top' style='display: block;position: absolute;top:-1px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='left_mid' style='display: block;position: absolute;top:"+((divHeight-4)/2)+"px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='right_mid' style='display: block;position: absolute;top:"+((divHeight-4)/2)+"px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='left_bottom' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='bottom_mid' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:"+((divWith-4)/2)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
+            "<span class='right_bottom' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>";
+
         var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed;   -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;user-select: none; width:" + divWith +
             "px;height: " + divHeight +
             "px;cursor:move;position: relative;top:" + divRelativeY +
             "px;left:" + divRelativeX +
-            "px;'>" + "</div>";
+            "px;'>" + spans+"</div>";
         $(div).appendTo(imageCut.dom);
         imageObject.div = {
             dom: $("#" + this.div_id)
