@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/require.js"></script>
+    <script>
+       require(["js/imageCut.js"],function(imageCutJS){
+            var imageCut=imageCutJS.imageCut;
+           imageCut.init("#img").listen();
+       });
+    </script>
+</head>
+<body>
+  <div id="img" style="width: 400px;height: 600px;background-color: burlywood;">
+     <!--   <div id="img_cut" style="border: 1px black dashed;width: 200px;height: 200px;cursor:move;position: relative;">
+
+        </div>-->
+   </div>
+
+    <div id="test" style="width: 800px;height: 600px;background-color:dodgerblue;"></div>
+</body>
+</html>
