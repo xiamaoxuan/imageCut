@@ -4,37 +4,49 @@
 "use strict";
 define(function (require, exports, moudle) {
     require("js/jquery");
-    var imageCut ={
+    var imageCut = {
         firstPosition: undefined,//第一次点击的点
         secondPostion: undefined,//第二次点击的点
         div: undefined,
-        div_id: undefined
+        div_id: undefined,
+        cover_div: undefined,
+        cover_div_id:undefined,
+        cover_dom:undefined
     }
     imageCut.init = function (initDom) {
+        this.dom = $(initDom);
+        var imageWith = imageCut.getNums($(initDom).css("width"));
+        var imageHeight = imageCut.getNums($(initDom).css("height"));
+        var abTop = $(initDom).offset().top;
+        var abLeft = $(initDom).offset().left;
+        imageCut.cover_div_id=imageCut.uuid();
+        imageCut.cover_div = "<div id='"+ imageCut.cover_div_id+"' style='z-index:100;width: " + imageWith + "px;height:" + imageHeight + "px;'></div>";
+        $(imageCut.cover_div).appendTo(this.dom.parent());
+        this.cover_dom=$("#"+imageCut.cover_div_id);
+        this.cover_dom.offset({top:abTop,left:abLeft});
         //jquery对象
         $(document).bind("mouseup", function () {
-            if (imageCut.dom != undefined) {
-                imageCut.dom.unbind("mousemove");
+            if (imageCut.cover_dom != undefined) {
+                imageCut.cover_dom.unbind("mousemove");
             }
             if (imageCut.div != undefined) {
                 imageCut.div.dom.unbind("mousemove");
             }
         });
-        this.dom = $(initDom);
         return this;
     }
     //监听在div内鼠标事件
     imageCut.listen = function () {
         //第一次点击的时候
         var imageObj = this;
-        this.dom.bind("mousedown", function (e) {
+        this.cover_dom.bind("mousedown", function (e) {
             //获取第一个点的位置
             imageObj.firstPosition = imageObj.getLocation(e);
             //鼠标移动的时候获取鼠标的位置
-            imageObj.dom.bind("mousemove", function (e1) {
+            imageObj.cover_dom.bind("mousemove", function (e1) {
                 imageObj.secondPostion = imageObj.getLocation(e1);
-                imageObj.dom.unbind("mouseup").bind("mouseup", function () {
-                    imageObj.dom.unbind("mousemove");
+                imageObj.cover_dom.unbind("mouseup").bind("mouseup", function () {
+                    imageObj.cover_dom.unbind("mousemove");
                     if (imageObj.div != undefined) {
                         imageObj.div.dom.unbind("mousemove");
                     }
@@ -65,21 +77,20 @@ define(function (require, exports, moudle) {
         if (this.div_id == undefined) {
             this.div_id = this.uuid();
         }
-        var spans="<span class='left_top' style='display: block;position: absolute;top:-1px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='top_mid' style='display: block;position: absolute;top:-1px;left:"+((divWith-4)/2)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='right_top' style='display: block;position: absolute;top:-1px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='left_mid' style='display: block;position: absolute;top:"+((divHeight-4)/2)+"px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='right_mid' style='display: block;position: absolute;top:"+((divHeight-4)/2)+"px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='left_bottom' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='bottom_mid' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:"+((divWith-4)/2)+"px;border: 1px solid black;width: 4px;height: 4px'></span>"+
-            "<span class='right_bottom' style='display: block;position: absolute;top:"+(divHeight-5)+"px;left:"+(divWith-5)+"px;border: 1px solid black;width: 4px;height: 4px'></span>";
-
-        var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed;   -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;user-select: none; width:" + divWith +
+        var spans = "<span class='left_top' style='display: block;position: absolute;top:-1px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='top_mid' style='display: block;position: absolute;top:-1px;left:" + ((divWith - 6) / 2) + "px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='right_top' style='display: block;position: absolute;top:-1px;left:" + (divWith - 5) + "px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='left_mid' style='display: block;position: absolute;top:" + ((divHeight - 6) / 2) + "px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='right_mid' style='display: block;position: absolute;top:" + ((divHeight - 6) / 2) + "px;left:" + (divWith - 5) + "px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='left_bottom' style='display: block;position: absolute;top:" + (divHeight - 5) + "px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='bottom_mid' style='display: block;position: absolute;top:" + (divHeight - 5) + "px;left:" + ((divWith - 6) / 2) + "px;border: 1px solid black;width: 4px;height: 4px'></span>" +
+            "<span class='right_bottom' style='display: block;position: absolute;top:" + (divHeight - 5) + "px;left:" + (divWith - 5) + "px;border: 1px solid black;width: 4px;height: 4px'></span>";
+        var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed; width:" + divWith +
             "px;height: " + divHeight +
             "px;cursor:move;position: relative;top:" + divRelativeY +
             "px;left:" + divRelativeX +
-            "px;'>" + spans+"</div>";
-        $(div).appendTo(imageCut.dom);
+            "px;'>" + spans + "</div>";
+        $(div).appendTo(imageCut.cover_dom);
         imageObject.div = {
             dom: $("#" + this.div_id)
         };
@@ -186,6 +197,15 @@ define(function (require, exports, moudle) {
             window.event.cancelBubble = true;
         }
     }
+    /**
+     * 重画div
+     * @param spanClass
+     * @param shift
+     */
+    imageCut.reDrawDiv = function (spanClass, shift) {
+
+    }
+
     imageCut.uuid = function () {
         var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
         var chars = CHARS, uuid = new Array(36), rnd = 0, r;
