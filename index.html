@@ -6,12 +6,21 @@
     <script src="js/require.js"></script>
     <script>
         require(["js/imageCut.js"],function(imageCutJS){
-            var imageCut=imageCutJS.imageCut;
+            var imageCut=imageCutJS.imageCut();
             imageCut.init("#img").listen();
+         var imageCut2=imageCutJS.imageCut();
+             imageCut2.init("#img2").listen();
+            var imageCut3=imageCutJS.imageCut();
+            imageCut3.init("#img3").listen();
+            var imageCut4=imageCutJS.imageCut();
+            imageCut4.init("#img4").listen();
         });
     </script>
 </head>
 <body>
 <img id="img"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 800px;height: 400px;"/>
+<img id="img2"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 800px;height: 400px;"/>
+<img id="img3"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 800px;height: 400px;"/>
+<img id="img4"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 800px;height: 400px;"/>
 </body>
 </html>
