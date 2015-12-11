@@ -119,16 +119,16 @@ define(function (require, exports, moudle) {
                         var left = imageObject.getNums(imageObject.div.dom.css("left")) + x;
                         //TODO 边界控制
                         if (x < 0 && y < 0) {
-                            if (top >= 0 && left >= 0 && top < maxTop && left < maxLeft) {
+                            if (top >= 0 && left >= 0 && top < maxTop-1 && left < maxLeft-1) {
                                 imageObject.div.dom.css({
                                     top: top + "px",
                                     left: left + "px"
                                 });
-                            } else if (top >= 0 && left < 0 && top < maxTop) {
+                            } else if (top >= 0 && left < 0 && top < maxTop-1) {
                                 imageObject.div.dom.css({
                                     top: top + "px"
                                 });
-                            } else if (top < 0 && left >= 0 && left <= maxLeft) {
+                            } else if (top < 0 && left >= 0 && left < maxLeft-1) {
                                 imageObject.div.dom.css({
                                     left: left + "px"
                                 });
@@ -140,35 +140,35 @@ define(function (require, exports, moudle) {
                                     left: left + "px"
                                 });
                             }
-                            if (top >= 0 && top < maxTop) {
+                            if (top >= 0 && top < maxTop-1) {
                                 imageObject.div.dom.css({
                                     top: top + "px"
                                 });
                             }
                             preLocation = currentLocation;
                         } else if (x >= 0 && y < 0) {
-                            if (top < maxTop && top >= 0) {
+                            if (top < maxTop-1 && top >= 0) {
                                 imageObject.div.dom.css({
                                     top: top + "px"
                                 });
                             }
-                            if (left >= 0 && left < maxLeft) {
+                            if (left >= 0 && left < maxLeft-1) {
                                 imageObject.div.dom.css({
                                     left: left + "px"
                                 });
                             }
                             preLocation = currentLocation;
                         } else if (x >= 0 && y >= 0) {
-                            if (top < maxTop && left < maxLeft && top >= 0 && left >= 0) {
+                            if (top < maxTop-1 && left < maxLeft-1 && top >= 0 && left >= 0) {
                                 imageObject.div.dom.css({
                                     top: top + "px",
                                     left: left + "px"
                                 });
-                            } else if (top >= maxTop && left < maxLeft && left >= 0) {
+                            } else if (top > maxTop-1 && left < maxLeft-1 && left >= 0) {
                                 imageObject.div.dom.css({
                                     left: left + "px"
                                 });
-                            } else if (top < maxTop && left >= maxLeft && top >= 0) {
+                            } else if (top < maxTop-1 && left > maxLeft-1 && top >= 0) {
                                 imageObject.div.dom.css({
                                     top: top + "px"
                                 });
