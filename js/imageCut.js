@@ -20,7 +20,7 @@ define(function (require, exports, moudle) {
                 var abTop = $(initDom).offset().top;
                 var abLeft = $(initDom).offset().left;
                 this.cover_div_id = this.uuid();
-                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div></div>";
+                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div></div>";
                 $(this.cover_div).appendTo(this.dom.parent());
                 this.cover_dom = $("#" + this.cover_div_id);
                 this.cover_dom.offset({top: abTop, left: abLeft});
@@ -85,7 +85,7 @@ define(function (require, exports, moudle) {
                     "<span class='left_bottom' style='display: block;cursor: sw-resize;position: absolute;top:" + (divHeight - 5) + "px;left:-1px;border: 1px solid black;width: 4px;height: 4px'></span>" +
                     "<span class='bottom_mid' style='display: block;cursor: s-resize;position: absolute;top:" + (divHeight - 5) + "px;left:" + ((divWith - 6) / 2) + "px;border: 1px solid black;width: 4px;height: 4px'></span>" +
                     "<span class='right_bottom' style='display: block;cursor:se-resize;position: absolute;top:" + (divHeight - 5) + "px;left:" + (divWith - 5) + "px;border: 1px solid black;width: 4px;height: 4px'></span>";
-                var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed; width:" + divWith +
+                var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none; width:" + divWith +
                     "px;height: " + divHeight +
                     "px;cursor:move;position: absolute;"+
                     "'>" + spans + "</div>";
@@ -117,7 +117,6 @@ define(function (require, exports, moudle) {
                         var y = currentLocation[1] - preLocation[1];
                         var top = imageObject.getNums(imageObject.div.dom.css("top")) + y;
                         var left = imageObject.getNums(imageObject.div.dom.css("left")) + x;
-                        //TODO 边界控制
                         if (x < 0 && y < 0) {
                             if (top >= 0 && left >= 0 && top < maxTop-1 && left < maxLeft-1) {
                                 imageObject.div.dom.css({
