@@ -3,16 +3,19 @@
  */
 "use strict";
 define(function (require, exports, moudle) {
+    var imageCut=(function () {
+        var obj= {
+            firstPosition: undefined,//第一次点击的点
+            secondPostion: undefined,//第二次点击的点
+            div: undefined,
+            div_id: undefined,
+            cover_div: undefined,
+            cover_div_id:undefined,
+            cover_dom:undefined
+        };
+        return obj;
+    })();
     require("js/jquery");
-    var imageCut = {
-        firstPosition: undefined,//第一次点击的点
-        secondPostion: undefined,//第二次点击的点
-        div: undefined,
-        div_id: undefined,
-        cover_div: undefined,
-        cover_div_id:undefined,
-        cover_dom:undefined
-    }
     imageCut.init = function (initDom) {
         this.dom = $(initDom);
         var imageWith = imageCut.getNums($(initDom).css("width"));
@@ -20,7 +23,7 @@ define(function (require, exports, moudle) {
         var abTop = $(initDom).offset().top;
         var abLeft = $(initDom).offset().left;
         imageCut.cover_div_id=imageCut.uuid();
-        imageCut.cover_div = "<div id='"+ imageCut.cover_div_id+"' style='z-index:100;width: " + imageWith + "px;height:" + imageHeight + "px;'></div>";
+        imageCut.cover_div = "<div id='"+ imageCut.cover_div_id+"' style='z-index:5;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div></div>";
         $(imageCut.cover_div).appendTo(this.dom.parent());
         this.cover_dom=$("#"+imageCut.cover_div_id);
         this.cover_dom.offset({top:abTop,left:abLeft});
@@ -87,7 +90,7 @@ define(function (require, exports, moudle) {
             "<span class='right_bottom' style='display: block;position: absolute;top:" + (divHeight - 5) + "px;left:" + (divWith - 5) + "px;border: 1px solid black;width: 4px;height: 4px'></span>";
         var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: 1px black dashed; width:" + divWith +
             "px;height: " + divHeight +
-            "px;cursor:move;position: relative;top:" + divRelativeY +
+            "px;cursor:move;position: absolute;top:" + divRelativeY +
             "px;left:" + divRelativeX +
             "px;'>" + spans + "</div>";
         $(div).appendTo(imageCut.cover_dom);
