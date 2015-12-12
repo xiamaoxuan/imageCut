@@ -17,10 +17,30 @@ define(function (require, exports, moudle) {
             border_width: 1,
             bg_color: "#00CC99",
             translated: 0.5,
-            init: function (initDom) {
-                this.dom = $(initDom);
+            original_image_size:undefined,
+            width_proportion:undefined,
+            height_proportion:undefined,
+            callback:undefined,
+            init: function (json) {
+                var initDom;
+                //初始化参数
+                if(typeof json=="object"){
+                    if(json.initDom!=undefined){
+                        this.dom = $(json.initDom);
+                        initDom=json.initDom;
+                    }else{
+                        console.error("请传入合法参数");
+                        return;
+                    }
+                }else if(typeof json =="string"){
+                    this.dom=$(json);
+                }
+                this.callback=json.callback?json.callback:undefined;
+                this.original_image_size=this.getImageSize();
                 var imageWith = this.getNums($(initDom).css("width"));
                 var imageHeight = this.getNums($(initDom).css("height"));
+                this.width_proportion=this.original_image_size[0]/imageWith;
+                this.height_proportion=this.original_image_size[1]/imageHeight;
                 var abTop = $(initDom).offset().top;
                 var abLeft = $(initDom).offset().left;
                 this.cover_div_id = this.uuid();
@@ -54,6 +74,7 @@ define(function (require, exports, moudle) {
                             if (imageObj.div != undefined) {
                                 imageObj.div.dom.unbind("mousemove");
                             }
+                            imageObj.clearMouseUp();
                         });
                         imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPostion);
                     });
@@ -204,7 +225,6 @@ define(function (require, exports, moudle) {
                             preLocation = currentLocation;
                         }
                         imageObject.cover_dom.unbind("mouseup").bind("mouseup", function () {
-                            console.info(imageObject.bgDom);
                             imageObject.bgDom.css({
                                 filter: "alpha(opacity=0)",
                                 "-moz-opacity": 0,
@@ -244,9 +264,9 @@ define(function (require, exports, moudle) {
                         });
                     });
                     imageObject.div.dom.find(".left_mid").unbind("mouseup").bind("mouseup", function () {
+
                         imageObject.clearMouseUp();
                     });
-
                     //下中
                     imageObject.div.dom.find(".bottom_mid").unbind("mousedown").bind("mousedown", function (e2) {
                         imageObject.stopBubble(e2);
@@ -278,7 +298,6 @@ define(function (require, exports, moudle) {
                     imageObject.div.dom.find(".right_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
                     });
-
                     //上中
                     imageObject.div.dom.find(".top_mid").unbind("mousedown").bind("mousedown", function (e2) {
                         imageObject.stopBubble(e2);
@@ -327,7 +346,6 @@ define(function (require, exports, moudle) {
                     imageObject.div.dom.find(".left_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
                     });
-
                     imageObject.div.dom.find(".right_top").unbind("mousedown").bind("mousedown", function (e2) {
                         imageObject.stopBubble(e2);
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
@@ -368,6 +386,7 @@ define(function (require, exports, moudle) {
                 }
             }, clearMouseUp: function () {
                 var imageObject = this;
+                imageObject.callback(imageObject.getParams());
                 this.cover_dom.unbind("mouseup").bind("mouseup", function () {
                     imageObject.div.dom.unbind("mousemove");
                     imageObject.div.dom.find(".left_top").unbind("mousemove");
@@ -461,6 +480,23 @@ define(function (require, exports, moudle) {
                     }
                     this.div.maxTop = (cover_Height) - (divHeight);
                 }
+            },
+            getImageSize:function(){
+                try{
+                    var image=new Image();
+                    image.src= this.dom.attr("src");
+                    return [image.width,image.height];
+                }catch (e){
+                    console.error("没有背景图片");
+                    return;
+                }
+            },
+            getParams:function(){
+                var left=this.getNums(this.div.dom.css("left"))*this.width_proportion;
+                var top=this.getNums(this.div.dom.css("top"))*this.height_proportion;
+                var width=this.getNums(this.div.dom.css("width"))*this.width_proportion;
+                var height=this.getNums(this.div.dom.css("height"))*this.height_proportion;
+                return [left,top,width,height];
             }
         };
     };

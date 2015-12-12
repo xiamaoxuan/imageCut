@@ -7,11 +7,12 @@
     <script>
         require(["js/imageCut.js"],function(imageCutJS){
             var imageCut=imageCutJS.imageCut();
-            imageCut.init("#img").listen();
+            imageCut.init({initDom:"#img",callback:function(e){console.info(e)}}).listen();
         });
     </script>
 </head>
 <body>
-<img id="img"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 800px;height: 400px;"/>
+<img id="img"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 400px;height: 300px;"/>
+<div id="img2"  style="position: relative;top: 100px;left: 100px;width: 800px;height: 600px;background: url('images/bg.jpg')"></div>
 </body>
 </html>
