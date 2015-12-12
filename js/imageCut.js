@@ -15,6 +15,8 @@ define(function (require, exports, moudle) {
             cover_dom: undefined,
             box_width: 8,
             border_width: 1,
+            bg_color: "#00CC99",
+            translated: 0.5,
             init: function (initDom) {
                 this.dom = $(initDom);
                 var imageWith = this.getNums($(initDom).css("width"));
@@ -80,17 +82,19 @@ define(function (require, exports, moudle) {
                     "<span class='left_bottom' style='display: block;cursor: sw-resize;position: absolute;bottom:-" + imageObject.border_width + "px;left:-" + imageObject.border_width + "px;border: " + imageObject.border_width + "px solid black;width: " + imageObject.box_width + "px;height: " + imageObject.box_width + "px'></span>" +
                     "<span class='bottom_mid' style='display: block;cursor: s-resize;position: absolute;bottom:-" + imageObject.border_width + "px;left:" + ((divWith - imageObject.box_width - 2 * imageObject.border_width) / 2) + "px;border: " + imageObject.border_width + "px solid black;width: " + imageObject.box_width + "px;height: " + imageObject.box_width + "px'></span>" +
                     "<span class='right_bottom' style='display: block;cursor:se-resize;position: absolute;bottom: -" + imageObject.border_width + "px;right: -" + imageObject.border_width + "px;border: " + imageObject.border_width + "px solid black;width: " + imageObject.box_width + "px;height: " + imageObject.box_width + "px'></span>";
+                var bg_id = imageObject.uuid();
+                var bgdiv = "<div  id='" + bg_id + "' style='width:100%;height:100%; transition: background .5s; -moz-transition: background .5s;-webkit-transition: background .5s;;	-o-transition: background .5s;'></div>";
                 var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: " + imageObject.border_width + "px black dashed;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none; width:" + divWith +
                     "px;height: " + divHeight +
                     "px;cursor:move;position: absolute;" +
-                    "'>" + spans + "</div>";
+                    "'>" + spans + bgdiv + "</div>";
                 $(div).appendTo(imageObject.cover_dom);
                 imageObject.div = {
                     dom: $("#" + this.div_id),
                     maxTop: undefined,
                     maxLeft: undefined
                 };
-
+                imageObject.bgDom = $("#" + bg_id);
                 if (first[1] - second[1] < 0) {
                     imageObject.div.dom.offset({top: first[1]});
                 } else {
@@ -120,6 +124,13 @@ define(function (require, exports, moudle) {
                     imageObject.stopBubble(e);
                     var preLocation = imageObject.getLocation(e);
                     imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e1) {
+                        imageObject.bgDom.css({
+                            filter: "alpha(opacity="+imageObject.translated*100+")",
+                            "-moz-opacity": imageObject.translated,
+                            "-khtml-opacity": imageObject.translated,
+                            "opacity": imageObject.translated,
+                            "background-color":imageObject.bg_color
+                        });
                         if (imageObject.div.maxTop == undefined) {
                             maxTop = domHeight - divHeight
                         } else {
@@ -193,6 +204,14 @@ define(function (require, exports, moudle) {
                             preLocation = currentLocation;
                         }
                         imageObject.cover_dom.unbind("mouseup").bind("mouseup", function () {
+                            console.info(imageObject.bgDom);
+                            imageObject.bgDom.css({
+                                filter: "alpha(opacity=0)",
+                                "-moz-opacity": 0,
+                                "-khtml-opacity": 0,
+                                "opacity": 0,
+                                "background-color":imageObject.bg_color
+                            });
                             imageObject.clearMouseUp();
                         });
                     });
@@ -324,10 +343,7 @@ define(function (require, exports, moudle) {
                     imageObject.div.dom.find(".right_top").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
                     });
-
-
                 });
-
             },
             getLocation: function (e) {
                 var array = new Array();
