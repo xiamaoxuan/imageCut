@@ -20,7 +20,11 @@ define(function (require, exports, moudle) {
             original_image_size:undefined,
             width_proportion:undefined,
             height_proportion:undefined,
-            callback:undefined,
+            callback:undefined,//选择截图后的回调函数，默认传参数params编码
+            cut_div_dom:undefined,//截图后的展示div
+            cut_div_width:undefined,//截图后展示的div的宽度
+            cut_div_height:undefined,//截图后展示的div的高度
+            cut_div_position:undefined,//截图后的展示div的相对
             init: function (json) {
                 var initDom;
                 //初始化参数
@@ -35,7 +39,7 @@ define(function (require, exports, moudle) {
                 }else if(typeof json =="string"){
                     this.dom=$(json);
                 }
-                this.callback=json.callback?json.callback:undefined;
+                this.callback=json.callback?json.callback:function(){return;};
                 this.original_image_size=this.getImageSize();
                 var imageWith = this.getNums($(initDom).css("width"));
                 var imageHeight = this.getNums($(initDom).css("height"));
@@ -44,10 +48,16 @@ define(function (require, exports, moudle) {
                 var abTop = $(initDom).offset().top;
                 var abLeft = $(initDom).offset().left;
                 this.cover_div_id = this.uuid();
-                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div></div>";
+                var cut_div_id=this.uuid();
+                this.cut_div_id=cut_div_id;
+                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                    "<div id=\""+this.cut_div_id+"\" style='position: absolute;'></div>"
+                    +"</div>";
+                console.info(this.cover_div);
                 $(this.cover_div).appendTo(this.dom.parent());
                 this.cover_dom = $("#" + this.cover_div_id);
                 this.cover_dom.offset({top: abTop, left: abLeft});
+                this.cut_div_dom=$("#"+cut_div_id);
                 var Obj = this;
                 //jquery对象
                 $(document).bind("mouseup", function () {
@@ -77,6 +87,7 @@ define(function (require, exports, moudle) {
                             imageObj.clearMouseUp();
                         });
                         imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPostion);
+                        imageObj.drawCutImg();
                     });
                 });
             }, drawDiv: function (first, second) {
@@ -234,6 +245,7 @@ define(function (require, exports, moudle) {
                             });
                             imageObject.clearMouseUp();
                         });
+                        imageObject.drawCutImg();
                     });
                     //右中
                     imageObject.div.dom.find(".right_mid").unbind("mousedown").bind("mousedown", function (e2) {
@@ -245,6 +257,7 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('right', imageObject.wSecondPostion[0] - imageObject.wFirstPostion[0]);
                             imageObject.wFirstPostion = imageObject.wSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".right_mid").unbind("mouseup").bind("mouseup", function () {
@@ -261,10 +274,10 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('left', imageObject.wSecondPostion[0] - imageObject.wFirstPostion[0]);
                             imageObject.wFirstPostion = imageObject.wSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".left_mid").unbind("mouseup").bind("mouseup", function () {
-
                         imageObject.clearMouseUp();
                     });
                     //下中
@@ -277,6 +290,7 @@ define(function (require, exports, moudle) {
                             imageObject.heightRefresh('bottom', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".bottom_mid").unbind("mouseup").bind("mouseup", function () {
@@ -293,6 +307,7 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('right', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".right_bottom").unbind("mouseup").bind("mouseup", function () {
@@ -308,6 +323,7 @@ define(function (require, exports, moudle) {
                             imageObject.heightRefresh('top', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".top_mid").unbind("mouseup").bind("mouseup", function () {
@@ -325,6 +341,7 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('left', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".left_top").unbind("mouseup").bind("mouseup", function () {
@@ -341,6 +358,7 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('left', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".left_bottom").unbind("mouseup").bind("mouseup", function () {
@@ -356,6 +374,7 @@ define(function (require, exports, moudle) {
                             imageObject.widthRefresh('right', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
                             imageObject.hFirstPostion = imageObject.hSecondPostion;
                             imageObject.clearMouseUp();
+                            imageObject.drawCutImg();
                         });
                     });
                     imageObject.div.dom.find(".right_top").unbind("mouseup").bind("mouseup", function () {
@@ -386,7 +405,9 @@ define(function (require, exports, moudle) {
                 }
             }, clearMouseUp: function () {
                 var imageObject = this;
-                imageObject.callback(imageObject.getParams());
+                var params=imageObject.getParams();
+                imageObject.callback(params);
+
                 this.cover_dom.unbind("mouseup").bind("mouseup", function () {
                     imageObject.div.dom.unbind("mousemove");
                     imageObject.div.dom.find(".left_top").unbind("mousemove");
@@ -497,6 +518,24 @@ define(function (require, exports, moudle) {
                 var width=this.getNums(this.div.dom.css("width"))*this.width_proportion;
                 var height=this.getNums(this.div.dom.css("height"))*this.height_proportion;
                 return [left,top,width,height];
+            },
+            drawCutImg:function(){
+                var imageObject=this;
+                var params=imageObject.getParams();
+                var div_width=imageObject.getNums(imageObject.cover_dom.css("width"));
+                var width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
+                var height=imageObject.cut_div_height?imageObject.cut_div_height:params[3];
+                var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
+                var top=imageObject.cut_div_position?(imageObject.cut_div_position[1]):0;
+                imageObject.cut_div_dom.css({
+                    "width":width+"px",
+                    "height":height+"px",
+                    "left":left+"px",
+                    "top":top+"px",
+                    "background-position-x":-params[0],
+                    "background-position-y":-params[1],
+                    "background-image": "url("+ this.dom.attr("src")+")"
+                });
             }
         };
     };

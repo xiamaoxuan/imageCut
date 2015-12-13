@@ -5,14 +5,21 @@
     <title>Title</title>
     <script src="js/require.js"></script>
     <script>
-        require(["js/imageCut.js"],function(imageCutJS){
-            var imageCut=imageCutJS.imageCut();
-            imageCut.init({initDom:"#img",callback:function(e){console.info(e)}}).listen();
+        require(["js/imageCut.js"], function (imageCutJS) {
+            var imageCut = imageCutJS.imageCut();
+            imageCut.init({
+                initDom: "#img", callback: function (params) {
+                  console.info(params);
+                }
+            }).listen();
         });
     </script>
 </head>
 <body>
-<img id="img"  src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 400px;height: 300px;"/>
-<div id="img2"  style="position: relative;top: 100px;left: 100px;width: 800px;height: 600px;background: url('images/bg.jpg')"></div>
+<div>
+    <img id="img" src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 400px;height: 300px;"/>
+
+</div>
+
 </body>
 </html>
