@@ -15,7 +15,7 @@ define(function (require, exports, moudle) {
             cover_dom: undefined,
             box_width: 8,
             border_width: 1,
-            bg_color: "#00CC99",
+            bg_color: "#00CC66",
             translated: 0.5,
             original_image_size:undefined,
             width_proportion:undefined,
@@ -37,7 +37,6 @@ define(function (require, exports, moudle) {
                     }
                 }else if(typeof json =="string"){
                     this.dom=$(json);
-
                 }
                 this.callback=json.callback?json.callback:function(){return;};
                 this.original_image_size=this.getImageSize();
@@ -68,6 +67,7 @@ define(function (require, exports, moudle) {
                         Obj.div.dom.unbind("mousemove");
                     }
                 });
+                this.listen();
                 return this;
             },
             listen: function () {
