@@ -31,22 +31,22 @@ define(function (require, exports, moudle) {
                 if(typeof json=="object"){
                     if(json.initDom!=undefined){
                         this.dom = $(json.initDom);
-                        initDom=json.initDom;
                     }else{
                         console.error("请传入合法参数");
                         return;
                     }
                 }else if(typeof json =="string"){
                     this.dom=$(json);
+
                 }
                 this.callback=json.callback?json.callback:function(){return;};
                 this.original_image_size=this.getImageSize();
-                var imageWith = this.getNums($(initDom).css("width"));
-                var imageHeight = this.getNums($(initDom).css("height"));
+                var imageWith = this.getNums(this.dom.css("width"));
+                var imageHeight = this.getNums(this.dom.css("height"));
                 this.width_proportion=this.original_image_size[0]/imageWith;
                 this.height_proportion=this.original_image_size[1]/imageHeight;
-                var abTop = $(initDom).offset().top;
-                var abLeft = $(initDom).offset().left;
+                var abTop = this.dom .offset().top;
+                var abLeft = this.dom .offset().left;
                 this.cover_div_id = this.uuid();
                 var cut_div_id=this.uuid();
                 this.cut_div_id=cut_div_id;
