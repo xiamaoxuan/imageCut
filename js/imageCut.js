@@ -22,8 +22,8 @@ define(function (require, exports, moudle) {
             height_proportion:undefined,
             callback:undefined,//选择截图后的回调函数，默认传参数params编码
             cut_div_dom:undefined,//截图后的展示div
-            cut_div_width:undefined,//截图后展示的div的宽度
-            cut_div_height:undefined,//截图后展示的div的高度
+            cut_div_width:1000,//截图后展示的div的宽度
+            cut_div_height:500,//截图后展示的div的高度
             cut_div_position:undefined,//截图后的展示div的相对
             init: function (json) {
                 var initDom;
@@ -50,13 +50,13 @@ define(function (require, exports, moudle) {
                 var cut_div_id=this.uuid();
                 this.cut_div_id=cut_div_id;
                 this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
-                    "<div id=\""+this.cut_div_id+"\" style='position: absolute;'></div>"
+                    "<img id=\""+this.cut_div_id+"\" ondragstart='return false;' style='position: absolute;z-index: 100;'/>"
                     +"</div>";
-                console.info(this.cover_div);
                 $(this.cover_div).appendTo(this.dom.parent());
                 this.cover_dom = $("#" + this.cover_div_id);
                 this.cover_dom.offset({top: abTop, left: abLeft});
                 this.cut_div_dom=$("#"+cut_div_id);
+
                 var Obj = this;
                 //jquery对象
                 $(document).bind("mouseup", function () {
@@ -68,6 +68,15 @@ define(function (require, exports, moudle) {
                     }
                 });
                 this.listen();
+                var imageObject=this;
+                this.cut_div_dom.unbind("mousedown").bind("mousedown",function(e){
+                    imageObject.stopBubble(e);
+                    return;
+                });
+                this.cut_div_dom.unbind("click").bind("click",function(e){
+                    imageObject.stopBubble(e);
+                    return;
+                });
                 return this;
             },
             listen: function () {
@@ -404,10 +413,10 @@ define(function (require, exports, moudle) {
                     window.event.cancelBubble = true;
                 }
             }, clearMouseUp: function () {
+                this.cut_div_dom.attr("src", this.dom.attr("src"));
                 var imageObject = this;
                 var params=imageObject.getParams();
                 imageObject.callback(params);
-
                 this.cover_dom.unbind("mouseup").bind("mouseup", function () {
                     imageObject.div.dom.unbind("mousemove");
                     imageObject.div.dom.find(".left_top").unbind("mousemove");
@@ -522,19 +531,22 @@ define(function (require, exports, moudle) {
             drawCutImg:function(){
                 var imageObject=this;
                 var params=imageObject.getParams();
+                var orgImgSize=imageObject.getImageSize();
                 var div_width=imageObject.getNums(imageObject.cover_dom.css("width"));
                 var width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
                 var height=imageObject.cut_div_height?imageObject.cut_div_height:params[3];
+                var width_proportion=width/orgImgSize[0];
+                var height_proportion=height/orgImgSize[1];
                 var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
                 var top=imageObject.cut_div_position?(imageObject.cut_div_position[1]):0;
+                left=left-params[0]*width_proportion;
+                top=top-params[1]*height_proportion;
                 imageObject.cut_div_dom.css({
                     "width":width+"px",
                     "height":height+"px",
                     "left":left+"px",
                     "top":top+"px",
-                    "background-position-x":-params[0],
-                    "background-position-y":-params[1],
-                    "background-image": "url("+ this.dom.attr("src")+")"
+                    "clip":"rect("+params[1]*height_proportion+"px,"+(params[2]*width_proportion+params[0]*width_proportion)+"px,"+(params[1]*height_proportion+params[3]*height_proportion)+"px,"+params[0]*width_proportion+"px)"
                 });
             }
         };
