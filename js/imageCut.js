@@ -49,14 +49,13 @@ define(function (require, exports, moudle) {
                 this.cover_div_id = this.uuid();
                 var cut_div_id=this.uuid();
                 this.cut_div_id=cut_div_id;
-                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
                     "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\""+this.cut_div_id+"\" ondragstart='return false;' style='position: relative;'/> </div>"
                     +"</div>";
                 $(this.cover_div).appendTo(this.dom.parent());
                 this.cover_dom = $("#" + this.cover_div_id);
                 this.cover_dom.offset({top: abTop, left: abLeft});
                 this.cut_div_dom=$("#"+cut_div_id);
-
                 var Obj = this;
                 //jquery对象
                 $(document).bind("mouseup", function () {
@@ -95,8 +94,15 @@ define(function (require, exports, moudle) {
                             }
                             imageObj.clearMouseUp();
                         });
+                        //临界状态
+                        if(imageObj.secondPosition[0]>imageObj.cover_dom.offset().left+imageObj.getNums(imageObj.cover_dom.css("width"))-2*imageObj.border_width){
+                            return false;
+                        }
+                        if(imageObj.secondPosition[1]>imageObj.cover_dom.offset().top+imageObj.getNums(imageObj.cover_dom.css("height"))-2*imageObj.border_width){
+                            return false;
+                        }
                         imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPosition);
-                        imageObj.drawCutImg();
+
                     });
                 });
             }, drawDiv: function (first, second) {
@@ -160,6 +166,7 @@ define(function (require, exports, moudle) {
                 } else {
                     maxLeft = imageObject.div.maxLeft;
                 }
+                imageObject.drawCutImg();
                 //给当前截取的div绑定事件
                 this.div.dom.unbind("mousedown").bind("mousedown", function (e) {
                     imageObject.stopBubble(e);
@@ -541,7 +548,7 @@ define(function (require, exports, moudle) {
                 var height_proportion=height/params[3];
                 var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
                 var top=imageObject.cut_div_position?(imageObject.cut_div_position[1]):0;
-                imageObject.cut_div_dom.parent().css({"left":left+"px", "top":top+"px", "width":width+"px", "height":height+"px","background":"red"});
+                imageObject.cut_div_dom.parent().css({"left":left+"px", "top":top+"px", "width":width+"px", "height":height+"px"});
                 imageObject.cut_div_dom.css({
                     "width":orgImgSize[0]*width_proportion+"px",
                     "height":orgImgSize[1]*height_proportion+"px",
