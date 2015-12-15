@@ -22,6 +22,7 @@
             original_image_size:undefined,
             width_proportion:undefined,
             height_proportion:undefined,
+            click:undefined,//点击事件
             callback:undefined,//选择截图后的回调函数，默认传参数params编码
             cut_div_dom:undefined,//截图后的展示div
             cut_div_width:undefined,//截图后展示的div的宽度
@@ -37,6 +38,7 @@
                         this.box_width = json.box_width ? json.box_width : this.box_width;//box宽高
                         this.border_width = json.border_width ? json.border_width : this.border_width;//boder的大小
                         this.bg_color=json.bg_color ? json.bg_color : this.bg_color;//背景颜色
+                        this.dblclick=json.dblclick ? json.dblclick : this.dblclick;//点击事件
                         this.translated=json.translated ? json.translated : this.translated;//透明度
                         this.callback=json.translated ? json.callback : this.callback;//截图完成的回调函数
                         this.cut_div_width=json.cut_div_width ? json.cut_div_width : this.cut_div_width;//展示div的宽度
@@ -91,6 +93,10 @@
                     return;
                 });
                 return this;
+            },destory: function () {
+                if(this.div.dom!=undefined){
+                    this.div.dom.remove();
+                }
             },
             listen: function () {
                 //第一次点击的时候
@@ -156,6 +162,11 @@
                     maxLeft: undefined
                 };
                 imageObject.bgDom = $("#" + bg_id);
+                imageObject.div.dom.unbind("dblclick").bind("dblclick",function(){
+                    var params=imageObject.getParams();
+                    imageObject.dblclick(params);
+                    imageObject.destory();
+                });
                 if (first[1] - second[1] < 0) {
                     imageObject.div.dom.offset({top: first[1]});
                 } else {
@@ -578,8 +589,6 @@
                     width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
                     height =imageObject.cut_div_height?imageObject.cut_div_height:params[3];
                 }else{
-                    console.info(imageObject.getNums(imageObject.bgDom.css("width"))*imageObject.cut_div_multiple);
-                    console.info(imageObject.getNums(imageObject.bgDom.css("height"))*imageObject.cut_div_multiple);
                     width=imageObject.getNums(imageObject.bgDom.css("width"))*imageObject.cut_div_multiple;
                     height =imageObject.getNums(imageObject.bgDom.css("height"))*imageObject.cut_div_multiple;
                 }
