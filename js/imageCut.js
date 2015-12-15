@@ -7,7 +7,7 @@ define(function (require, exports, moudle) {
     var imageCut = function () {
         return {
             firstPosition: undefined,//第一次点击的点
-            secondPostion: undefined,//第二次点击的点
+            secondPosition: undefined,//第二次点击的点
             div: undefined,
             div_id: undefined,
             cover_div: undefined,
@@ -22,9 +22,9 @@ define(function (require, exports, moudle) {
             height_proportion:undefined,
             callback:undefined,//选择截图后的回调函数，默认传参数params编码
             cut_div_dom:undefined,//截图后的展示div
-            cut_div_width:1000,//截图后展示的div的宽度
-            cut_div_height:500,//截图后展示的div的高度
-            cut_div_position:undefined,//截图后的展示div的相对
+            cut_div_width:400,//截图后展示的div的宽度
+            cut_div_height:300,//截图后展示的div的高度
+            cut_div_position:[50,20],//截图后的展示div的相对
             init: function (json) {
                 var initDom;
                 //初始化参数
@@ -49,8 +49,8 @@ define(function (require, exports, moudle) {
                 this.cover_div_id = this.uuid();
                 var cut_div_id=this.uuid();
                 this.cut_div_id=cut_div_id;
-                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
-                    "<img id=\""+this.cut_div_id+"\" ondragstart='return false;' style='position: absolute;z-index: 100;'/>"
+                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;background-color: red;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                    "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\""+this.cut_div_id+"\" ondragstart='return false;' style='position: relative;'/> </div>"
                     +"</div>";
                 $(this.cover_div).appendTo(this.dom.parent());
                 this.cover_dom = $("#" + this.cover_div_id);
@@ -87,7 +87,7 @@ define(function (require, exports, moudle) {
                     imageObj.firstPosition = imageObj.getLocation(e);
                     //鼠标移动的时候获取鼠标的位置
                     imageObj.cover_dom.bind("mousemove", function (e1) {
-                        imageObj.secondPostion = imageObj.getLocation(e1);
+                        imageObj.secondPosition = imageObj.getLocation(e1);
                         imageObj.cover_dom.unbind("mouseup").bind("mouseup", function () {
                             imageObj.cover_dom.unbind("mousemove");
                             if (imageObj.div != undefined) {
@@ -95,7 +95,7 @@ define(function (require, exports, moudle) {
                             }
                             imageObj.clearMouseUp();
                         });
-                        imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPostion);
+                        imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPosition);
                         imageObj.drawCutImg();
                     });
                 });
@@ -262,9 +262,9 @@ define(function (require, exports, moudle) {
                         imageObject.wFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.wSecondPostion = imageObject.getLocation(e3);
-                            imageObject.widthRefresh('right', imageObject.wSecondPostion[0] - imageObject.wFirstPostion[0]);
-                            imageObject.wFirstPostion = imageObject.wSecondPostion;
+                            imageObject.wsecondPosition = imageObject.getLocation(e3);
+                            imageObject.widthRefresh('right', imageObject.wsecondPosition[0] - imageObject.wFirstPostion[0]);
+                            imageObject.wFirstPostion = imageObject.wsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -279,9 +279,9 @@ define(function (require, exports, moudle) {
                         imageObject.wFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.wSecondPostion = imageObject.getLocation(e3);
-                            imageObject.widthRefresh('left', imageObject.wSecondPostion[0] - imageObject.wFirstPostion[0]);
-                            imageObject.wFirstPostion = imageObject.wSecondPostion;
+                            imageObject.wsecondPosition = imageObject.getLocation(e3);
+                            imageObject.widthRefresh('left', imageObject.wsecondPosition[0] - imageObject.wFirstPostion[0]);
+                            imageObject.wFirstPostion = imageObject.wsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -295,9 +295,9 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('bottom', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('bottom', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -311,10 +311,10 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('bottom', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.widthRefresh('right', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('bottom', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.widthRefresh('right', imageObject.hsecondPosition[0] - imageObject.hFirstPostion[0]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -328,9 +328,9 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('top', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('top', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -345,10 +345,10 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('top', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.widthRefresh('left', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('top', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.widthRefresh('left', imageObject.hsecondPosition[0] - imageObject.hFirstPostion[0]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -362,10 +362,10 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('bottom', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.widthRefresh('left', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('bottom', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.widthRefresh('left', imageObject.hsecondPosition[0] - imageObject.hFirstPostion[0]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -378,10 +378,10 @@ define(function (require, exports, moudle) {
                         imageObject.hFirstPostion = imageObject.getLocation(e2);
                         imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e3) {
                             imageObject.stopBubble(e3);
-                            imageObject.hSecondPostion = imageObject.getLocation(e3);
-                            imageObject.heightRefresh('top', imageObject.hSecondPostion[1] - imageObject.hFirstPostion[1]);
-                            imageObject.widthRefresh('right', imageObject.hSecondPostion[0] - imageObject.hFirstPostion[0]);
-                            imageObject.hFirstPostion = imageObject.hSecondPostion;
+                            imageObject.hsecondPosition = imageObject.getLocation(e3);
+                            imageObject.heightRefresh('top', imageObject.hsecondPosition[1] - imageObject.hFirstPostion[1]);
+                            imageObject.widthRefresh('right', imageObject.hsecondPosition[0] - imageObject.hFirstPostion[0]);
+                            imageObject.hFirstPostion = imageObject.hsecondPosition;
                             imageObject.clearMouseUp();
                             imageObject.drawCutImg();
                         });
@@ -413,7 +413,9 @@ define(function (require, exports, moudle) {
                     window.event.cancelBubble = true;
                 }
             }, clearMouseUp: function () {
-                this.cut_div_dom.attr("src", this.dom.attr("src"));
+                if( this.cut_div_dom.attr("src")==undefined) {
+                    this.cut_div_dom.attr("src", this.dom.attr("src"));
+                }
                 var imageObject = this;
                 var params=imageObject.getParams();
                 imageObject.callback(params);
@@ -535,18 +537,16 @@ define(function (require, exports, moudle) {
                 var div_width=imageObject.getNums(imageObject.cover_dom.css("width"));
                 var width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
                 var height=imageObject.cut_div_height?imageObject.cut_div_height:params[3];
-                var width_proportion=width/orgImgSize[0];
-                var height_proportion=height/orgImgSize[1];
+                var width_proportion=width/params[2];
+                var height_proportion=height/params[3];
                 var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
                 var top=imageObject.cut_div_position?(imageObject.cut_div_position[1]):0;
-                left=left-params[0]*width_proportion;
-                top=top-params[1]*height_proportion;
+                imageObject.cut_div_dom.parent().css({"left":left+"px", "top":top+"px", "width":width+"px", "height":height+"px","background":"red"});
                 imageObject.cut_div_dom.css({
-                    "width":width+"px",
-                    "height":height+"px",
-                    "left":left+"px",
-                    "top":top+"px",
-                    "clip":"rect("+params[1]*height_proportion+"px,"+(params[2]*width_proportion+params[0]*width_proportion)+"px,"+(params[1]*height_proportion+params[3]*height_proportion)+"px,"+params[0]*width_proportion+"px)"
+                    "width":orgImgSize[0]*width_proportion+"px",
+                    "height":orgImgSize[1]*height_proportion+"px",
+                    "left":-params[0]*width_proportion,
+                    "top":-params[1]*height_proportion
                 });
             }
         };
