@@ -1,10 +1,12 @@
 /**
  * Created by 夏茂轩 on 2015/12/4.
+ * QQ:1034297177
+ * phone:18328451242
+ * email:1034297177@qq.com
  */
 "use strict";
-define(function (require, exports, moudle) {
-    require("js/jquery");
-    var imageCut = function () {
+(function(){
+    var ImageCut = function () {
         return {
             firstPosition: undefined,//第一次点击的点
             secondPosition: undefined,//第二次点击的点
@@ -22,15 +24,27 @@ define(function (require, exports, moudle) {
             height_proportion:undefined,
             callback:undefined,//选择截图后的回调函数，默认传参数params编码
             cut_div_dom:undefined,//截图后的展示div
-            cut_div_width:400,//截图后展示的div的宽度
-            cut_div_height:300,//截图后展示的div的高度
-            cut_div_position:[50,20],//截图后的展示div的相对
+            cut_div_width:undefined,//截图后展示的div的宽度
+            cut_div_height:undefined,//截图后展示的div的高度
+            cut_div_multiple:undefined,//截图与截图div的倍数比
+            cut_div_position:[50,0],//截图后的展示div的相对
             init: function (json) {
                 var initDom;
                 //初始化参数
                 if(typeof json=="object"){
                     if(json.initDom!=undefined){
                         this.dom = $(json.initDom);
+                        this.box_width = json.box_width ? json.box_width : this.box_width;//box宽高
+                        this.border_width = json.border_width ? json.border_width : this.border_width;//boder的大小
+                        this.bg_color=json.bg_color ? json.bg_color : this.bg_color;//背景颜色
+                        this.translated=json.translated ? json.translated : this.translated;//透明度
+                        this.callback=json.translated ? json.callback : this.callback;//截图完成的回调函数
+                        this.cut_div_width=json.cut_div_width ? json.cut_div_width : this.cut_div_width;//展示div的宽度
+                        this.cut_div_height=json.cut_div_height ? json.cut_div_height : this.cut_div_height;//展示div的高度
+                        if(this.cut_div_width==undefined&&this.cut_div_height==undefined){
+                            this.cut_div_multiple=json.cut_div_multiple ? json.cut_div_multiple : undefined;//展示div的宽度
+                        }
+                        this.cut_div_position=json.cut_div_position ? json.cut_div_position : this.cut_div_position;//展示div的位置
                     }else{
                         console.error("请传入合法参数");
                         return;
@@ -260,6 +274,8 @@ define(function (require, exports, moudle) {
                                 "background-color":imageObject.bg_color
                             });
                             imageObject.clearMouseUp();
+                            var params=imageObject.getParams();
+                            imageObject.callback(params);
                         });
                         imageObject.drawCutImg();
                     });
@@ -278,6 +294,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".right_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
 
                     //左中
@@ -295,6 +313,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".left_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                     //下中
                     imageObject.div.dom.find(".bottom_mid").unbind("mousedown").bind("mousedown", function (e2) {
@@ -311,6 +331,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".bottom_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                     //右下
                     imageObject.div.dom.find(".right_bottom").unbind("mousedown").bind("mousedown", function (e2) {
@@ -328,6 +350,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".right_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                     //上中
                     imageObject.div.dom.find(".top_mid").unbind("mousedown").bind("mousedown", function (e2) {
@@ -344,6 +368,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".top_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
 
                     //左上
@@ -362,6 +388,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".left_top").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                     //左下
                     imageObject.div.dom.find(".left_bottom").unbind("mousedown").bind("mousedown", function (e2) {
@@ -379,6 +407,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".left_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                     imageObject.div.dom.find(".right_top").unbind("mousedown").bind("mousedown", function (e2) {
                         imageObject.stopBubble(e2);
@@ -395,6 +425,8 @@ define(function (require, exports, moudle) {
                     });
                     imageObject.div.dom.find(".right_top").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
+                        var params=imageObject.getParams();
+                        imageObject.callback(params);
                     });
                 });
             },
@@ -424,8 +456,6 @@ define(function (require, exports, moudle) {
                     this.cut_div_dom.attr("src", this.dom.attr("src"));
                 }
                 var imageObject = this;
-                var params=imageObject.getParams();
-                imageObject.callback(params);
                 this.cover_dom.unbind("mouseup").bind("mouseup", function () {
                     imageObject.div.dom.unbind("mousemove");
                     imageObject.div.dom.find(".left_top").unbind("mousemove");
@@ -542,8 +572,17 @@ define(function (require, exports, moudle) {
                 var params=imageObject.getParams();
                 var orgImgSize=imageObject.getImageSize();
                 var div_width=imageObject.getNums(imageObject.cover_dom.css("width"));
-                var width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
-                var height=imageObject.cut_div_height?imageObject.cut_div_height:params[3];
+                var width;
+                var height;
+                if(imageObject.cut_div_multiple==undefined){
+                    width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
+                    height =imageObject.cut_div_height?imageObject.cut_div_height:params[3];
+                }else{
+                    console.info(imageObject.getNums(imageObject.bgDom.css("width"))*imageObject.cut_div_multiple);
+                    console.info(imageObject.getNums(imageObject.bgDom.css("height"))*imageObject.cut_div_multiple);
+                    width=imageObject.getNums(imageObject.bgDom.css("width"))*imageObject.cut_div_multiple;
+                    height =imageObject.getNums(imageObject.bgDom.css("height"))*imageObject.cut_div_multiple;
+                }
                 var width_proportion=width/params[2];
                 var height_proportion=height/params[3];
                 var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
@@ -558,6 +597,5 @@ define(function (require, exports, moudle) {
             }
         };
     };
-    //暴露接口
-    exports.imageCut = imageCut;
-});
+    window.ImageCut=ImageCut;
+})();
