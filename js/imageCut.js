@@ -5,7 +5,7 @@
  * email:1034297177@qq.com
  */
 "use strict";
-(function(){
+(function () {
     var ImageCut = function () {
         return {
             firstPosition: undefined,//第一次点击的点
@@ -19,82 +19,87 @@
             border_width: 1,
             bg_color: "#00CC66",
             translated: 0.5,
-            original_image_size:undefined,
-            width_proportion:undefined,
-            height_proportion:undefined,
-            click:undefined,//点击事件
-            callback:undefined,//选择截图后的回调函数，默认传参数params编码
-            cut_div_dom:undefined,//截图后的展示div
-            cut_div_width:undefined,//截图后展示的div的宽度
-            cut_div_height:undefined,//截图后展示的div的高度
-            cut_div_multiple:undefined,//截图与截图div的倍数比
-            cut_div_position:[50,0],//截图后的展示div的相对
+            original_image_size: undefined,
+            width_proportion: undefined,
+            height_proportion: undefined,
+            click: undefined,//点击事件
+            callback: undefined,//选择截图后的回调函数，默认传参数params编码
+            cut_div_dom: undefined,//截图后的展示div
+            cut_div_width: undefined,//截图后展示的div的宽度
+            cut_div_height: undefined,//截图后展示的div的高度
+            cut_div_multiple: undefined,//截图与截图div的倍数比
+            cut_div_position: [50, 0],//截图后的展示div的相对
             init: function (json) {
-                var initDom;
                 //初始化参数
-                if(typeof json=="object"){
-                    if(json.initDom!=undefined){
+                if (typeof json == "object") {
+                    if (json.initDom != undefined) {
                         this.dom = $(json.initDom);
                         this.box_width = json.box_width ? json.box_width : this.box_width;//box宽高
                         this.border_width = json.border_width ? json.border_width : this.border_width;//boder的大小
-                        this.bg_color=json.bg_color ? json.bg_color : this.bg_color;//背景颜色
-                        this.dblclick=json.dblclick ? json.dblclick : this.dblclick;//点击事件
-                        this.translated=json.translated ? json.translated : this.translated;//透明度
-                        this.callback=json.translated ? json.callback : this.callback;//截图完成的回调函数
-                        this.cut_div_width=json.cut_div_width ? json.cut_div_width : this.cut_div_width;//展示div的宽度
-                        this.cut_div_height=json.cut_div_height ? json.cut_div_height : this.cut_div_height;//展示div的高度
-                        if(this.cut_div_width==undefined&&this.cut_div_height==undefined){
-                            this.cut_div_multiple=json.cut_div_multiple ? json.cut_div_multiple : undefined;//展示div的宽度
+                        this.bg_color = json.bg_color ? json.bg_color : this.bg_color;//背景颜色
+                        this.dblclick = json.dblclick ? json.dblclick : this.dblclick;//点击事件
+                        this.translated = json.translated ? json.translated : this.translated;//透明度
+                        this.callback = json.translated ? json.callback : this.callback;//截图完成的回调函数
+                        this.cut_div_width = json.cut_div_width ? json.cut_div_width : this.cut_div_width;//展示div的宽度
+                        this.cut_div_height = json.cut_div_height ? json.cut_div_height : this.cut_div_height;//展示div的高度
+                        if (this.cut_div_width == undefined && this.cut_div_height == undefined) {
+                            this.cut_div_multiple = json.cut_div_multiple ? json.cut_div_multiple : undefined;//展示div的宽度
                         }
-                        this.cut_div_position=json.cut_div_position ? json.cut_div_position : this.cut_div_position;//展示div的位置
-                    }else{
+                        this.cut_div_position = json.cut_div_position ? json.cut_div_position : this.cut_div_position;//展示div的位置
+                    } else {
                         console.error("请传入合法参数");
                         return;
                     }
-                }else if(typeof json =="string"){
-                    this.dom=$(json);
+                } else if (typeof json == "string") {
+                    this.dom = $(json);
                 }
-                this.callback=json.callback?json.callback:function(){return;};
-                this.original_image_size=this.getImageSize();
-                var imageWith = this.getNums(this.dom.css("width"));
-                var imageHeight = this.getNums(this.dom.css("height"));
-                this.width_proportion=this.original_image_size[0]/imageWith;
-                this.height_proportion=this.original_image_size[1]/imageHeight;
-                var abTop = this.dom .offset().top;
-                var abLeft = this.dom .offset().left;
-                this.cover_div_id = this.uuid();
-                var cut_div_id=this.uuid();
-                this.cut_div_id=cut_div_id;
-                this.cover_div = "<div id='" + this.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
-                    "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\""+this.cut_div_id+"\" ondragstart='return false;' style='position: relative;'/> </div>"
-                    +"</div>";
-                $(this.cover_div).appendTo(this.dom.parent());
-                this.cover_dom = $("#" + this.cover_div_id);
-                this.cover_dom.offset({top: abTop, left: abLeft});
-                this.cut_div_dom=$("#"+cut_div_id);
                 var Obj = this;
-                //jquery对象
-                $(document).bind("mouseup", function () {
-                    if (Obj.cover_dom != undefined) {
-                        Obj.cover_dom.unbind("mousemove");
-                    }
-                    if (Obj.div != undefined) {
-                        Obj.div.dom.unbind("mousemove");
-                    }
-                });
-                this.listen();
-                var imageObject=this;
-                this.cut_div_dom.unbind("mousedown").bind("mousedown",function(e){
-                    imageObject.stopBubble(e);
-                    return;
-                });
-                this.cut_div_dom.unbind("click").bind("click",function(e){
-                    imageObject.stopBubble(e);
-                    return;
-                });
+                this.dom.load(function () {
+                    Obj.callback = json.callback ? json.callback : function () {
+                        return;
+                    };
+                    Obj.original_image_size = Obj.getImageSize();
+                    var imageWith = Obj.getNums(Obj.dom.css("width"));
+                    var imageHeight = Obj.getNums(Obj.dom.css("height"));
+                    Obj.width_proportion = Obj.original_image_size[0] / imageWith;
+                    Obj.height_proportion = Obj.original_image_size[1] / imageHeight;
+                    var abTop = Obj.dom.offset().top;
+                    var abLeft = Obj.dom.offset().left;
+                    Obj.cover_div_id = Obj.uuid();
+                    var cut_div_id = Obj.uuid();
+                    Obj.cut_div_id = cut_div_id;
+                    Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='z-index:5;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                        "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\"" + Obj.cut_div_id + "\" ondragstart='return false;' style='position: relative;'/> </div>"
+                        + "</div>";
+                    $(Obj.cover_div).appendTo(Obj.dom.parent());
+                    Obj.cover_dom = $("#" + Obj.cover_div_id);
+                    Obj.cover_dom.offset({top: abTop, left: abLeft});
+                    Obj.cut_div_dom = $("#" + cut_div_id);
+
+                    //jquery对象
+                    $(document).bind("mouseup", function () {
+                        if (Obj.cover_dom != undefined) {
+                            Obj.cover_dom.unbind("mousemove");
+                        }
+                        if (Obj.div != undefined) {
+                            Obj.div.dom.unbind("mousemove");
+                        }
+                    });
+                    Obj.listen();
+                    var imageObject = this;
+                    this.cut_div_dom.unbind("mousedown").bind("mousedown", function (e) {
+                        imageObject.stopBubble(e);
+                        return;
+                    });
+                    this.cut_div_dom.unbind("click").bind("click", function (e) {
+                        imageObject.stopBubble(e);
+                        return;
+                    });
+                })
+
                 return this;
-            },destory: function () {
-                if(this.div.dom!=undefined){
+            }, destory: function () {
+                if (this.div.dom != undefined) {
                     this.div.dom.remove();
                 }
             },
@@ -115,10 +120,10 @@
                             imageObj.clearMouseUp();
                         });
                         //临界状态
-                        if(imageObj.secondPosition[0]>imageObj.cover_dom.offset().left+imageObj.getNums(imageObj.cover_dom.css("width"))-2*imageObj.border_width){
+                        if (imageObj.secondPosition[0] > imageObj.cover_dom.offset().left + imageObj.getNums(imageObj.cover_dom.css("width")) - 2 * imageObj.border_width) {
                             return false;
                         }
-                        if(imageObj.secondPosition[1]>imageObj.cover_dom.offset().top+imageObj.getNums(imageObj.cover_dom.css("height"))-2*imageObj.border_width){
+                        if (imageObj.secondPosition[1] > imageObj.cover_dom.offset().top + imageObj.getNums(imageObj.cover_dom.css("height")) - 2 * imageObj.border_width) {
                             return false;
                         }
                         imageObj.drawDiv(imageObj.firstPosition, imageObj.secondPosition);
@@ -162,10 +167,11 @@
                     maxLeft: undefined
                 };
                 imageObject.bgDom = $("#" + bg_id);
-                imageObject.div.dom.unbind("dblclick").bind("dblclick",function(){
-                    var params=imageObject.getParams();
+                imageObject.div.dom.unbind("dblclick").bind("dblclick", function () {
+                    var params = imageObject.getParams();
                     imageObject.dblclick(params);
                     imageObject.destory();
+                    imageObject.cutImage();
                 });
                 if (first[1] - second[1] < 0) {
                     imageObject.div.dom.offset({top: first[1]});
@@ -198,11 +204,11 @@
                     var preLocation = imageObject.getLocation(e);
                     imageObject.cover_dom.unbind("mousemove").bind("mousemove", function (e1) {
                         imageObject.bgDom.css({
-                            filter: "alpha(opacity="+imageObject.translated*100+")",
+                            filter: "alpha(opacity=" + imageObject.translated * 100 + ")",
                             "-moz-opacity": imageObject.translated,
                             "-khtml-opacity": imageObject.translated,
                             "opacity": imageObject.translated,
-                            "background-color":imageObject.bg_color
+                            "background-color": imageObject.bg_color
                         });
                         if (imageObject.div.maxTop == undefined) {
                             maxTop = domHeight - divHeight
@@ -282,10 +288,10 @@
                                 "-moz-opacity": 0,
                                 "-khtml-opacity": 0,
                                 "opacity": 0,
-                                "background-color":imageObject.bg_color
+                                "background-color": imageObject.bg_color
                             });
                             imageObject.clearMouseUp();
-                            var params=imageObject.getParams();
+                            var params = imageObject.getParams();
                             imageObject.callback(params);
                         });
                         imageObject.drawCutImg();
@@ -305,7 +311,7 @@
                     });
                     imageObject.div.dom.find(".right_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
 
@@ -324,7 +330,7 @@
                     });
                     imageObject.div.dom.find(".left_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                     //下中
@@ -342,7 +348,7 @@
                     });
                     imageObject.div.dom.find(".bottom_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                     //右下
@@ -361,7 +367,7 @@
                     });
                     imageObject.div.dom.find(".right_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                     //上中
@@ -379,7 +385,7 @@
                     });
                     imageObject.div.dom.find(".top_mid").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
 
@@ -399,7 +405,7 @@
                     });
                     imageObject.div.dom.find(".left_top").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                     //左下
@@ -418,7 +424,7 @@
                     });
                     imageObject.div.dom.find(".left_bottom").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                     imageObject.div.dom.find(".right_top").unbind("mousedown").bind("mousedown", function (e2) {
@@ -436,7 +442,7 @@
                     });
                     imageObject.div.dom.find(".right_top").unbind("mouseup").bind("mouseup", function () {
                         imageObject.clearMouseUp();
-                        var params=imageObject.getParams();
+                        var params = imageObject.getParams();
                         imageObject.callback(params);
                     });
                 });
@@ -463,7 +469,7 @@
                     window.event.cancelBubble = true;
                 }
             }, clearMouseUp: function () {
-                if( this.cut_div_dom.attr("src")==undefined) {
+                if (this.cut_div_dom.attr("src") == undefined) {
                     this.cut_div_dom.attr("src", this.dom.attr("src"));
                 }
                 var imageObject = this;
@@ -561,50 +567,76 @@
                     this.div.maxTop = (cover_Height) - (divHeight);
                 }
             },
-            getImageSize:function(){
-                try{
-                    var image=new Image();
-                    image.src= this.dom.attr("src");
-                    return [image.width,image.height];
-                }catch (e){
+            getImageSize: function () {
+                try {
+                    var image = new Image();
+                    image.src = this.dom.attr("src");
+                    return [image.width, image.height];
+                } catch (e) {
                     console.error("没有背景图片");
                     return;
                 }
             },
-            getParams:function(){
-                var left=this.getNums(this.div.dom.css("left"))*this.width_proportion;
-                var top=this.getNums(this.div.dom.css("top"))*this.height_proportion;
-                var width=this.getNums(this.div.dom.css("width"))*this.width_proportion;
-                var height=this.getNums(this.div.dom.css("height"))*this.height_proportion;
-                return [left,top,width,height];
+            getParams: function () {
+                var left = this.getNums(this.div.dom.css("left")) * this.width_proportion;
+                var top = this.getNums(this.div.dom.css("top")) * this.height_proportion;
+                var width = this.getNums(this.div.dom.css("width")) * this.width_proportion;
+                var height = this.getNums(this.div.dom.css("height")) * this.height_proportion;
+                return [left, top, width, height];
             },
-            drawCutImg:function(){
-                var imageObject=this;
-                var params=imageObject.getParams();
-                var orgImgSize=imageObject.getImageSize();
-                var div_width=imageObject.getNums(imageObject.cover_dom.css("width"));
+            drawCutImg: function () {
+                var imageObject = this;
+                var params = imageObject.getParams();
+                var orgImgSize = imageObject.getImageSize();
+                var div_width = imageObject.getNums(imageObject.cover_dom.css("width"));
                 var width;
                 var height;
-                if(imageObject.cut_div_multiple==undefined){
-                    width=imageObject.cut_div_width?imageObject.cut_div_width:params[2];
-                    height =imageObject.cut_div_height?imageObject.cut_div_height:params[3];
-                }else{
-                    width=imageObject.getNums(imageObject.bgDom.css("width"))*imageObject.cut_div_multiple;
-                    height =imageObject.getNums(imageObject.bgDom.css("height"))*imageObject.cut_div_multiple;
+                if (imageObject.cut_div_multiple == undefined) {
+                    width = imageObject.cut_div_width ? imageObject.cut_div_width : params[2];
+                    height = imageObject.cut_div_height ? imageObject.cut_div_height : params[3];
+                } else {
+                    width = imageObject.getNums(imageObject.bgDom.css("width")) * imageObject.cut_div_multiple;
+                    height = imageObject.getNums(imageObject.bgDom.css("height")) * imageObject.cut_div_multiple;
                 }
-                var width_proportion=width/params[2];
-                var height_proportion=height/params[3];
-                var left = imageObject.cut_div_position?(imageObject.cut_div_position[0]+div_width):(100+div_width);
-                var top=imageObject.cut_div_position?(imageObject.cut_div_position[1]):0;
-                imageObject.cut_div_dom.parent().css({"left":left+"px", "top":top+"px", "width":width+"px", "height":height+"px"});
-                imageObject.cut_div_dom.css({
-                    "width":orgImgSize[0]*width_proportion+"px",
-                    "height":orgImgSize[1]*height_proportion+"px",
-                    "left":-params[0]*width_proportion,
-                    "top":-params[1]*height_proportion
+                var width_proportion = width / params[2];
+                var height_proportion = height / params[3];
+                var left = imageObject.cut_div_position ? (imageObject.cut_div_position[0] + div_width) : (100 + div_width);
+                var top = imageObject.cut_div_position ? (imageObject.cut_div_position[1]) : 0;
+                imageObject.cut_div_dom.parent().css({
+                    "left": left + "px",
+                    "top": top + "px",
+                    "width": width + "px",
+                    "height": height + "px"
                 });
+                imageObject.cut_div_dom.css({
+                    "width": orgImgSize[0] * width_proportion + "px",
+                    "height": orgImgSize[1] * height_proportion + "px",
+                    "left": -params[0] * width_proportion,
+                    "top": -params[1] * height_proportion
+                });
+            },
+            cutImage: function () {
+                var imageObject = this;
+                var params=imageObject.getParams();
+                var width=imageObject.getNums(imageObject.cut_div_dom.parent().css("width"));
+                var height=imageObject.getNums(imageObject.cut_div_dom.parent().css("height"));
+                //var canvas = document.createElement('canvas');
+                var width_proportion = width / params[2];
+                var height_proportion = height / params[3];
+                var orgImgSize = imageObject.getImageSize();
+                var canvas = document.getElementById('xx');
+                var context = canvas.getContext("2d");
+                var img = new Image();
+                img.src = this.dom.attr("src");
+                $(canvas).css({
+                    "width": width + "px",
+                    "height": height + "px"
+                });
+                context.drawImage(img, params[0], params[1],  params[2] , params[3] , 0, 0, orgImgSize[0],  orgImgSize[1]);
+                var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=cut.png");
+                window.location.href = image2;
             }
         };
     };
-    window.ImageCut=ImageCut;
+    window.ImageCut = ImageCut;
 })();
