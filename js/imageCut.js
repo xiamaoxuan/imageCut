@@ -75,7 +75,6 @@
                     Obj.cover_dom = $("#" + Obj.cover_div_id);
                     Obj.cover_dom.offset({top: abTop, left: abLeft});
                     Obj.cut_div_dom = $("#" + cut_div_id);
-
                     //jquery对象
                     $(document).bind("mouseup", function () {
                         if (Obj.cover_dom != undefined) {
@@ -86,18 +85,17 @@
                         }
                     });
                     Obj.listen();
-                    var imageObject = this;
-                    this.cut_div_dom.unbind("mousedown").bind("mousedown", function (e) {
+                    var imageObject = Obj;
+                    Obj.cut_div_dom.unbind("mousedown").bind("mousedown", function (e) {
                         imageObject.stopBubble(e);
                         return;
                     });
-                    this.cut_div_dom.unbind("click").bind("click", function (e) {
+                    Obj.cut_div_dom.unbind("click").bind("click", function (e) {
                         imageObject.stopBubble(e);
                         return;
                     });
                 })
-
-                return this;
+                return Obj;
             }, destory: function () {
                 if (this.div.dom != undefined) {
                     this.div.dom.remove();
@@ -170,8 +168,8 @@
                 imageObject.div.dom.unbind("dblclick").bind("dblclick", function () {
                     var params = imageObject.getParams();
                     imageObject.dblclick(params);
-                    imageObject.destory();
                     imageObject.cutImage();
+                    imageObject.destory();
                 });
                 if (first[1] - second[1] < 0) {
                     imageObject.div.dom.offset({top: first[1]});
@@ -618,23 +616,28 @@
             cutImage: function () {
                 var imageObject = this;
                 var params=imageObject.getParams();
-                var width=imageObject.getNums(imageObject.cut_div_dom.parent().css("width"));
-                var height=imageObject.getNums(imageObject.cut_div_dom.parent().css("height"));
+                var width;
+                var height;
+                if (imageObject.cut_div_multiple == undefined) {
+                    width = imageObject.cut_div_width ? imageObject.cut_div_width : params[2];
+                    height = imageObject.cut_div_height ? imageObject.cut_div_height : params[3];
+                } else {
+                    width = imageObject.bgDom.parent().width()* imageObject.cut_div_multiple;
+                    height = imageObject.bgDom.parent().height() * imageObject.cut_div_multiple;
+                }
                 //var canvas = document.createElement('canvas');
-                var width_proportion = width / params[2];
-                var height_proportion = height / params[3];
                 var orgImgSize = imageObject.getImageSize();
                 var canvas = document.getElementById('xx');
                 var context = canvas.getContext("2d");
-                var img = new Image();
-                img.src = this.dom.attr("src");
                 $(canvas).css({
                     "width": width + "px",
                     "height": height + "px"
                 });
-                context.drawImage(img, params[0], params[1],  params[2] , params[3] , 0, 0, orgImgSize[0],  orgImgSize[1]);
-                var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=cut.png");
-                window.location.href = image2;
+                var img = new Image();
+                img.src = this.dom.attr("src");
+               //context.drawImage(img,-params[0],-params[1],params[2],params[3]);
+              /* var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=cut.png");
+                window.location.href = image2;*/
             }
         };
     };
