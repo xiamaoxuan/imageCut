@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="js/require.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/imageCut.js"></script>
     <script>
-        require(["js/imageCut.js"], function (imageCutJS) {
-            var imageCut = imageCutJS.imageCut();
-            imageCut.init({
-                initDom: "#img", callback: function (params) {
-                  console.info(params);
+       $(function(){
+            var image= new ImageCut().init({
+                "initDom":"#img",//必填,其余参数为选填，只有这个为必填
+                "box_width":8,//截图框的拖拽框大小
+                "border_width":1,//截图框的border宽度
+                "bg_color":"green",//截图框的背景颜色
+                "translated":0.5,//截图框透明度
+                "cut_div_multiple":1,//展示框的和截图框的比例,会被cut_div_width和cut_div_height属性覆盖
+                "callback": function (params) {
+                    //每次完成截图的时候的回掉函数，其中params是截图完成的参数，均为数字，
+                    // 前两个参数合为图片中截图起点，后连个参数为需要截取的长宽
+                    console.info(params);
+                },
+                "cut_div_position":[100,0],//截图框和展示框的比例位置
+                "dblclick":function(params){//双击的回掉函数，参数和callback一样
+                    console.info(params);
                 }
-            }).listen();
+            });
+           var image= new ImageCut().init("#img2");
         });
     </script>
 </head>
 <body>
 <div>
-    <img id="img" src="images/bg.jpg" style="position: relative;top: 100px;left: 100px;width: 400px;height: 300px;"/>
+    <img id="img" src="images/bg.jpg"/>
+    <br/>
 
 </div>
-
 </body>
 </html>

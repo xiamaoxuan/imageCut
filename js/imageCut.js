@@ -625,9 +625,9 @@
                     width = imageObject.bgDom.parent().width()* imageObject.cut_div_multiple;
                     height = imageObject.bgDom.parent().height() * imageObject.cut_div_multiple;
                 }
-                //var canvas = document.createElement('canvas');
+                var canvas = document.createElement('canvas');
                 var orgImgSize = imageObject.getImageSize();
-                var canvas = document.getElementById('xx');
+                //var canvas = document.getElementById('xx');
                 var context = canvas.getContext("2d");
                 $(canvas).css({
                     "width": width + "px",
