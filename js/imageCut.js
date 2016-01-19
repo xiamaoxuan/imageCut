@@ -29,6 +29,7 @@
             cut_div_height: undefined,//截图后展示的div的高度
             cut_div_multiple: undefined,//截图与截图div的倍数比
             cut_div_position: [50, 0],//截图后的展示div的相对
+            is_download:true,//是否支持下载截好后的图片
             init: function (json) {
                 //初始化参数
                 if (typeof json == "object") {
@@ -168,7 +169,9 @@
                 imageObject.div.dom.unbind("dblclick").bind("dblclick", function () {
                     var params = imageObject.getParams();
                     imageObject.dblclick(params);
-                    imageObject.cutImage();
+                    if(imageObject.is_download){
+                        imageObject.cutImage();
+                    }
                     imageObject.destory();
                 });
                 if (first[1] - second[1] < 0) {
@@ -628,16 +631,21 @@
                 var canvas = document.createElement('canvas');
                 var orgImgSize = imageObject.getImageSize();
                 //var canvas = document.getElementById('xx');
+                if(!canvas.getContext){
+                    alert("你的浏览器不支持canvas不能使用浏览器截图");
+                    return;
+                }
                 var context = canvas.getContext("2d");
-                $(canvas).css({
-                    "width": width + "px",
-                    "height": height + "px"
-                });
+                canvas.width=width;
+                canvas.height=height;
                 var img = new Image();
                 img.src = this.dom.attr("src");
-               //context.drawImage(img,-params[0],-params[1],params[2],params[3]);
-              /* var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=cut.png");
-                window.location.href = image2;*/
+               context.drawImage(img,params[0],params[1],params[2],params[3],0,0,width,height);
+                var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=foobar.png");
+                var aTag=document.createElement("a");
+                $(aTag).attr("href",image2);
+                $(aTag).attr("download","download.png");
+                aTag.click();
             }
         };
     };
