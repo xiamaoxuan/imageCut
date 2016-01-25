@@ -23,13 +23,14 @@
             width_proportion: undefined,
             height_proportion: undefined,
             click: undefined,//点击事件
-            callback: undefined,//选择截图后的回调函数，默认传参数params编码
+            callback: function(){},//选择截图后的回调函数，默认传参数params编码
             cut_div_dom: undefined,//截图后的展示div
             cut_div_width: undefined,//截图后展示的div的宽度
             cut_div_height: undefined,//截图后展示的div的高度
             cut_div_multiple: undefined,//截图与截图div的倍数比
             cut_div_position: [50, 0],//截图后的展示div的相对
-            is_download:true,//是否支持下载截好后的图片
+            is_download:false,//是否支持下载截好后的图片
+            dbclick:function(){},
             init: function (json) {
                 //初始化参数
                 if (typeof json == "object") {
@@ -38,7 +39,7 @@
                         this.box_width = json.box_width ? json.box_width : this.box_width;//box宽高
                         this.border_width = json.border_width ? json.border_width : this.border_width;//boder的大小
                         this.bg_color = json.bg_color ? json.bg_color : this.bg_color;//背景颜色
-                        this.dblclick = json.dblclick ? json.dblclick : this.dblclick;//点击事件
+                        this.dbclick = json.dbclick ? json.dbclick : this.dbclick;//点击事件
                         this.translated = json.translated ? json.translated : this.translated;//透明度
                         this.callback = json.translated ? json.callback : this.callback;//截图完成的回调函数
                         this.cut_div_width = json.cut_div_width ? json.cut_div_width : this.cut_div_width;//展示div的宽度
@@ -47,6 +48,7 @@
                             this.cut_div_multiple = json.cut_div_multiple ? json.cut_div_multiple : undefined;//展示div的宽度
                         }
                         this.cut_div_position = json.cut_div_position ? json.cut_div_position : this.cut_div_position;//展示div的位置
+                        this.is_download=json.is_download||false;//是否下载截图，支持canvas 才具备此功能
                     } else {
                         console.error("请传入合法参数");
                         return;
@@ -168,7 +170,7 @@
                 imageObject.bgDom = $("#" + bg_id);
                 imageObject.div.dom.unbind("dblclick").bind("dblclick", function () {
                     var params = imageObject.getParams();
-                    imageObject.dblclick(params);
+                    imageObject.dbclick(params);
                     if(imageObject.is_download){
                         imageObject.cutImage();
                     }
@@ -617,35 +619,39 @@
                 });
             },
             cutImage: function () {
-                var imageObject = this;
-                var params=imageObject.getParams();
-                var width;
-                var height;
-                if (imageObject.cut_div_multiple == undefined) {
-                    width = imageObject.cut_div_width ? imageObject.cut_div_width : params[2];
-                    height = imageObject.cut_div_height ? imageObject.cut_div_height : params[3];
-                } else {
-                    width = imageObject.bgDom.parent().width()* imageObject.cut_div_multiple;
-                    height = imageObject.bgDom.parent().height() * imageObject.cut_div_multiple;
+                if(!document.createElement("canvas").getContext){
+                    alert("只有支持html5的浏览器才可以通过浏览器截图");
+                }else{
+                    var imageObject = this;
+                    var params=imageObject.getParams();
+                    var width;
+                    var height;
+                    if (imageObject.cut_div_multiple == undefined) {
+                        width = imageObject.cut_div_width ? imageObject.cut_div_width : params[2];
+                        height = imageObject.cut_div_height ? imageObject.cut_div_height : params[3];
+                    } else {
+                        width = imageObject.bgDom.parent().width()* imageObject.cut_div_multiple;
+                        height = imageObject.bgDom.parent().height() * imageObject.cut_div_multiple;
+                    }
+                    var canvas = document.createElement('canvas');
+                    var orgImgSize = imageObject.getImageSize();
+                    //var canvas = document.getElementById('xx');
+                    if(!canvas.getContext){
+                        alert("你的浏览器不支持canvas不能使用浏览器截图");
+                        return;
+                    }
+                    var context = canvas.getContext("2d");
+                    canvas.width=width;
+                    canvas.height=height;
+                    var img = new Image();
+                    img.src = this.dom.attr("src");
+                    context.drawImage(img,params[0],params[1],params[2],params[3],0,0,width,height);
+                    var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=foobar.png");
+                    var aTag=document.createElement("a");
+                    $(aTag).attr("href",image2);
+                    $(aTag).attr("download","download.png");
+                    aTag.click();
                 }
-                var canvas = document.createElement('canvas');
-                var orgImgSize = imageObject.getImageSize();
-                //var canvas = document.getElementById('xx');
-                if(!canvas.getContext){
-                    alert("你的浏览器不支持canvas不能使用浏览器截图");
-                    return;
-                }
-                var context = canvas.getContext("2d");
-                canvas.width=width;
-                canvas.height=height;
-                var img = new Image();
-                img.src = this.dom.attr("src");
-               context.drawImage(img,params[0],params[1],params[2],params[3],0,0,width,height);
-                var image2 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=foobar.png");
-                var aTag=document.createElement("a");
-                $(aTag).attr("href",image2);
-                $(aTag).attr("download","download.png");
-                aTag.click();
             }
         };
     };
