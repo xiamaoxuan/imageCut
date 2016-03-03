@@ -4,9 +4,10 @@
  * phone:18328451242
  * email:1034297177@qq.com
  */
-"use strict";
-(function () {
-    var ImageCut = function () {
+
+;(function (window) {
+    "use strict";
+     function ImageCut(){
         return {
             firstPosition: undefined,//第一次点击的点
             secondPosition: undefined,//第二次点击的点
@@ -655,5 +656,5 @@
             }
         };
     };
-    window.ImageCut = ImageCut;
-})();
+     window.ImageCut=ImageCut;
+}(window));
