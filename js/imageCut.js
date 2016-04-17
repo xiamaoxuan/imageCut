@@ -72,7 +72,7 @@
                     Obj.cover_div_id = Obj.uuid();
                     var cut_div_id = Obj.uuid();
                     Obj.cut_div_id = cut_div_id;
-                    Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                    Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='background: url("+this.dom.attr("src")+");cursor:default;z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
                         "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\"" + Obj.cut_div_id + "\" ondragstart='return false;' style='position: relative;'/> </div>"
                         + "</div>";
                     $(Obj.cover_div).appendTo(Obj.dom.parent());
