@@ -72,7 +72,7 @@
                     Obj.cover_div_id = Obj.uuid();
                     var cut_div_id = Obj.uuid();
                     Obj.cut_div_id = cut_div_id;
-                    Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='background: url("+this.dom.attr("src")+");cursor:default;z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                    Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='position: relative;background: url("+this.dom.attr("src")+");cursor:default;z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
                         "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\"" + Obj.cut_div_id + "\" ondragstart='return false;' style='position: relative;'/> </div>"
                         + "</div>";
                     $(Obj.cover_div).appendTo(Obj.dom.parent());
@@ -178,9 +178,14 @@
                     imageObject.destory();
                 });
                 if (first[1] - second[1] < 0) {
-                    imageObject.div.dom.offset({top: first[1]});
+                    console.info(this.dom);
+                    var top=first[1]-this.dom.offset().top;
+                    imageObject.div.dom.css({top:top+"px"});
+                    //imageObject.div.dom.offset({top: first[1]});
                 } else {
-                    imageObject.div.dom.offset({top: second[1]});
+                    //imageObject.div.dom.offset({top: second[1]});
+                    var top=second[1]-this.dom.offset().top;
+                    imageObject.div.dom.css({top:top+"px"});
                 }
                 if (first[0] - second[0] < 0) {
                     imageObject.div.dom.offset({left: first[0]});
