@@ -72,8 +72,10 @@
                 Obj.cover_div_id = Obj.uuid();
                 var cut_div_id = Obj.uuid();
                 Obj.cut_div_id = cut_div_id;
-                Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='background: url("+this.dom.attr("src")+");cursor:default;z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; -ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'><div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
-                    "<div style='position: absolute;overflow: hidden;z-index: 100;'><img id=\"" + Obj.cut_div_id + "\" ondragstart='return false;' style='position: relative;'/> </div>"
+                Obj.cover_div = "<div id='" + Obj.cover_div_id + "' style='cursor:default;z-index:5;-webkit-user-select:none;background-color:rgba(212,0,0,0); -moz-user-select:none; background-repeat: no-repeat;background-position:center center;-ms-user-select:none;user-select:none;width: " + imageWith + "px;height:" + imageHeight + "px;'>" +
+                    "<img ondragstart='return false;' src=\""+this.dom.attr("src")+"\" style='display: block;width: 100%;height: 100%;position: absolute;z-index: 0;'>"+
+                    "<div style='z-index: 10;width: 100%;height: 100%;overflow:hidden;filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity: 0;opacity: 0;'></div>" +
+                    "<div style='position: absolute;overflow: hidden;z-index: 10;'><img id=\"" + Obj.cut_div_id + "\" ondragstart='return false;' style='position: relative;'/> </div>"
                     + "</div>";
                 $(Obj.cover_div).appendTo(Obj.dom.parent());
                 Obj.cover_dom = $("#" + Obj.cover_div_id);
@@ -158,9 +160,9 @@
                     "<span class='right_bottom' style='display: block;z-index: 20;cursor:se-resize;position: absolute;bottom: -" + imageObject.border_width + "px;right: -" + imageObject.border_width + "px;border: " + imageObject.border_width + "px solid black;width: " + imageObject.box_width + "px;height: " + imageObject.box_width + "px'></span>";
                 var bg_id = imageObject.uuid();
                 var bgdiv = "<div  id='" + bg_id + "' style='width:100%;height:100%; transition: background .5s; -moz-transition: background .5s;-webkit-transition: background .5s;;	-o-transition: background .5s;'></div>";
-                var div = "<div  onselectstart='return false' ondragstart='return false'  id='" + this.div_id + "' style='border: " + imageObject.border_width + "px black dashed;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none; width:" + divWith +
+                var div = "<div  onselectstart='return false'  id='" + this.div_id + "' style='border: " + imageObject.border_width + "px black dashed;-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;user-select:none; width:" + divWith +
                     "px;height: " + divHeight +
-                    "px;cursor:move;position: absolute;" +
+                    "px;cursor:move;position: absolute;z-index: 33" +
                     "'>" + spans + bgdiv + "</div>";
                 $(div).appendTo(imageObject.cover_dom);
                 imageObject.div = {
@@ -590,6 +592,13 @@
             },
             drawCutImg: function () {
                 var imageObject = this;
+                imageObject.bgDom.css({
+                    filter: "alpha(opacity=" + imageObject.translated * 100 + ")",
+                    "-moz-opacity": imageObject.translated,
+                    "-khtml-opacity": imageObject.translated,
+                    "opacity": imageObject.translated,
+                    "background-color": imageObject.bg_color
+                });
                 var params = imageObject.getParams();
                 var orgImgSize = imageObject.getImageSize();
                 var div_width = imageObject.getNums(imageObject.cover_dom.css("width"));
